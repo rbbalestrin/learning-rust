@@ -1,47 +1,42 @@
-
-
-//Variables live in Frames
 fn main() {
-    let n = 5; // n, 5 in the stack
-    let y = plus_one(n); // Then is main(n,5) and plus_one(x,5)
-    println!("{} + 1 = {}", n, y); // And ends with main(n,5; y,6)
+    let m1 = String::from("Hello");
+    let m2 = String::from("World");
+    greet(&m1, &m2); //Because its only a pointer to a string, when the function ends
+    // we can still use m1 and m2
+    let s = format!("{} {}", m1, m2);
+    println!("{}", s);
+    println!("---------");
+    //Dereferencing
+    let mut x = Box::new(3); // x points to heap which have 1
+    let a = *x; //*x read the heap value, so a = 1
+    *x += 1; //dereference the x to increse the heap value to 2, it doesnt change the value of a
+
+    let r1 = &x; //pointing to x in the stack
+    let b = **r1; //two dereferences, so get the heap value, b = 2
+
+    let r2 = &*x; //r2 goes to x, and then dereferences, in the end pointing to the value
+    let c = *r2; //the same thing about a
+    *x += 1;
 }
 
-fn plus_one(x: i32) -> i32 {
-    x + 1
+fn greet(g1: &String, g2: &String) {
+    println!("{} {}", g1, g2);
 }
 
-fn heap(){
-    let a = Box::new([0; 1_000_000]);
-    //Pointer to a place in the heap with 1_000_000 values
-
-    let b = a; // This is a pointer to a
-} //This is the heap, which holds data that can outlive a function, because it isn't "connected" to one
-
-fn memory_management(){
-    let b = Box::new([0; 100]);
-    free(b); //imaginary function that deallocate memory
-    assert!(b[0] == 0); //Will cause a error because its trying to use a pointer that dont exist anymore
+fn borrow_checker() {
+    let mut v: Vec<i32> = vec![1, 2, 3];
+    let num: &i32 = &v[2];
+    v.push(4);
+    //It will cause a error, because we are alising the data in num
+    // and trying to mutate with push
+    println!("Third element is {}", *num);
 }
 
-fn make_and_drop() {
-    let a_box = Box::new(5);
-} //When this function ends, Rust will deallocate the variable frame (because its in the Stack)
-// And when the frame is "killed" the heap is also deallocated
+fn mutable_references() {
+    let mut v = vec![1, 2, 3];
+    let num = &mut v[2];
+    *num += 1; //Dereference the num so it goes to 2 and increses to 3
+    println!("Third element is {}", *num); //After this num is no longer in use, v regains all permissions
 
-
-//So... What happens with this?
-fn box_and_owner() {
-    let a = Box::new(5);
-    let b = a;
-    // When Rust would try to free the box's heap memory, it would try twice,
-    // and that is undefined behaviour.
-}
-fn box_and_owner2(){
-    let a = Box::new(5); // To avoid this situation, Rust make the first variable **a, owner of the box**
-    let b = a;  // And when let b = a, Rust moves the ownership,
-    // so when the scopes ends, b is deallocated, not a
-    // When with this, if the variable is used to something
-    let c = b + 1;
-    // The heap memory is changed, making both a and b, invalid because they are pointing to "nothing"
+    println!("Vector is now {:?}", v);
 }
