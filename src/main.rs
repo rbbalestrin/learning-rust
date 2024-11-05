@@ -40,3 +40,22 @@ fn mutable_references() {
 
     println!("Vector is now {:?}", v);
 }
+
+fn lifetime() {
+    let mut x = 1;
+    let y = &x;
+    let z = *x;
+    x += z; //Fim do lifetime de z
+}
+
+fn ascii_capitalize(v: &mut Vec<char>) {
+    let c = &v[0];
+    if c.is_ascii_lowercase() {
+        let up = c.to_ascii_uppercase();
+        v[0] = up;
+    } else {
+        println!("Already capitalized: {:?}", v);
+    }
+}
+
+//Data must outlive any references to it
